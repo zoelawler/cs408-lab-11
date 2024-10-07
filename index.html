@@ -1,18 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <title>Hello World!</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test AWS Lambda</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
 </head>
 
 <body>
-  <h1>HTML Rocks!</h1>
-  <img src="img/compile.jpeg">
-  <script type="module" src="js/main.js"></script>
+    <h1>Get Information</h1>
+    <p id="lambda-info">
+        <!-- loaded with AJAX -->
+    </p>
+    <button id="load-data">Load Data</button>
+
+    <script>
+        document.getElementById("load-data").onclick = function () {
+            let lambda = document.getElementById("lambda-info");
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", function () {
+                lambda.innerHTML = xhr.response;
+            });
+            xhr.open("GET", "YOUR LAMBDA URL HERE!");
+            xhr.send();
+        }
+
+    </script>
 </body>
 
 </html>
