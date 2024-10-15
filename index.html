@@ -11,12 +11,29 @@
 </head>
 
 <body>
-    <h1>Get Information</h1>
+    <h1>Simple Demo for PUT, GET, and DELETE</h1>
     <p id="lambda-info">
         <!-- loaded with AJAX -->
     </p>
-    <button id="load-data">Load Data</button>
 
+    <hr>
+    <button id="send-data">Send Data</button>
+    <p>Sends an example JSON object to the server with id 11111</p>
+    <script>
+        document.getElementById("send-data").onclick = function () {
+            let xhr = new XMLHttpRequest();
+            xhr.open("PUT", "https://n9ohm8psf7.execute-api.us-west-2.amazonaws.com/items");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({
+                "id": "11111",
+                "price": 19,
+                "name": "test put value"
+            }));
+        }
+    </script>
+
+    <button id="load-data">Load Data</button>
+    <p>Loads data from the server</p>
     <script>
         document.getElementById("load-data").onclick = function () {
             let lambda = document.getElementById("lambda-info");
@@ -24,10 +41,22 @@
             xhr.addEventListener("load", function () {
                 lambda.innerHTML = xhr.response;
             });
-            xhr.open("GET", "YOUR LAMBDA URL HERE!");
+            xhr.open("GET", "https://n9ohm8psf7.execute-api.us-west-2.amazonaws.com/items");
             xhr.send();
         }
 
+    </script>
+
+    <hr>
+    <button id="delete-data">Delete Data</button>
+    <p>Deletes a JSON object from the server with 11111</p>
+    <script>
+        document.getElementById("delete-data").onclick = function () {
+            let xhr = new XMLHttpRequest();
+            xhr.open("DELETE", "https://n9ohm8psf7.execute-api.us-west-2.amazonaws.com/items/11111");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+        }
     </script>
 </body>
 
