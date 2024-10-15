@@ -22,10 +22,10 @@
     <script>
         document.getElementById("send-data").onclick = function () {
             let xhr = new XMLHttpRequest();
-            xhr.open("PUT", "https://n9ohm8psf7.execute-api.us-west-2.amazonaws.com/items");
+            xhr.open("PUT", "Your Lambda here");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify({
-                "id": "11111",
+                "id": "6666666",
                 "price": 19,
                 "name": "test put value"
             }));
@@ -41,7 +41,7 @@
             xhr.addEventListener("load", function () {
                 lambda.innerHTML = xhr.response;
             });
-            xhr.open("GET", "https://n9ohm8psf7.execute-api.us-west-2.amazonaws.com/items");
+            xhr.open("GET", "Your Lambda here");
             xhr.send();
         }
 
@@ -53,7 +53,7 @@
     <script>
         document.getElementById("delete-data").onclick = function () {
             let xhr = new XMLHttpRequest();
-            xhr.open("DELETE", "https://n9ohm8psf7.execute-api.us-west-2.amazonaws.com/items/11111");
+            xhr.open("DELETE", "Your Lambda here");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send();
         }
