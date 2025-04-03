@@ -4,60 +4,144 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Test AWS Lambda</title>
+    <title>Dynamic Table</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="">
-</head>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="/img/table.png" </head>
 
 <body>
-    <h1>Simple Demo for PUT, GET, and DELETE</h1>
-    <p id="lambda-info">
-        <!-- loaded with AJAX -->
-    </p>
+    <div class="main">
+        <div class="title">
+            <h2>My Simple Inventory Table</h1>
+                <button id="load-data">Load data</button>
+        </div>
 
-    <hr>
-    <button id="send-data">Send Data</button>
-    <p>Sends an example JSON object to the server with id 11111</p>
+        <!-- table where dynamic information will be added/deleted -->
+        <table id="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+        </table>
+        <hr>
+
+        <!-- where we will obtain input and assign it to id, name, price and add to database -->
+        <div class="adding-item">
+            <h2>Add New Item to Database</h2>
+
+            <label for="id">ID:</label>
+            <input type="text" id="id">
+
+            <label for="name">Name:</label>
+            <input type="text" id="name">
+
+            <label for="price">Price:</label>
+            <input type="text" id="price">
+
+            <button id="send-data">Add Item</button>
+        </div>
+    </div>
+
+    <!-- sends data to the database -->
     <script>
         document.getElementById("send-data").onclick = function () {
             let xhr = new XMLHttpRequest();
-            xhr.open("PUT", "Your Lambda here");
+            xhr.open("PUT", "https://ceszg9618k.execute-api.us-east-2.amazonaws.com/items");
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify({
-                "id": "6666666",
-                "price": 19,
-                "name": "test put value"
-            }));
+
+            // get elements by their id
+            let id = document.getElementById("id").value;
+            let name = document.getElementById("name").value;
+            let price = document.getElementById("price").value;
+
+            if (id && name && price) { // make sure id, name, and price are all filled out
+                let data = { // creates a data object with the properties id, name, and price
+                    "id": id,
+                    "name": name,
+                    "price": price
+                }
+                xhr.send(JSON.stringify(data)); // sends request to server as a JSON string
+                xhr.onload = function () {
+                    if (xhr.status === 200) { // make sure request was successful
+                        document.getElementById("load-data").click(); // automatically updates the table by calling the load-data function
+
+                        // clear text input after clicking "Add Item"
+                        document.getElementById("id").value = "";
+                        document.getElementById("name").value = "";
+                        document.getElementById("price").value = "";
+                    } else {
+                        alert(`Failed to add ${name}`);
+                    }
+                }
+            } else {
+                alert("Fill out all text fields");
+            }
         }
     </script>
 
-    <button id="load-data">Load Data</button>
-    <p>Loads data from the server</p>
+    <!-- loads data from database into table -->
     <script>
         document.getElementById("load-data").onclick = function () {
-            let lambda = document.getElementById("lambda-info");
+            let table = document.getElementById("table-body"); //want to get the table and insert into the table body
             let xhr = new XMLHttpRequest();
+            table.innerHTML = ''; // clear previous data
+
             xhr.addEventListener("load", function () {
-                lambda.innerHTML = xhr.response;
+                if (xhr.status === 200) { // make sure request was successful
+                    let data = JSON.parse(xhr.responseText);
+
+                    if (data.length === 0) { // check to see if theres any data to load, if not alerts
+                        alert("No data to load");
+                    } else {
+                        data.sort(function (a, b) { // sorts the information by id
+                            return a.id - b.id;
+                        });
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i];
+                            let row = table.insertRow();
+
+                            // populate table with the data
+                            row.innerHTML = `
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td><button onclick="deleteItem('${item.id}')">Delete</button></td>
+                        `;
+                        }
+                    }
+                } else {
+                    alert("Unable to load data");
+                }
             });
-            xhr.open("GET", "Your Lambda here");
+            xhr.open("GET", "https://ceszg9618k.execute-api.us-east-2.amazonaws.com/items");
             xhr.send();
         }
-
     </script>
 
-    <hr>
-    <button id="delete-data">Delete Data</button>
-    <p>Deletes a JSON object from the server with 11111</p>
+    <!-- deletes item from table and from database -->
     <script>
-        document.getElementById("delete-data").onclick = function () {
+        function deleteItem(id) {
             let xhr = new XMLHttpRequest();
-            xhr.open("DELETE", "Your Lambda here");
+            xhr.open("DELETE", `https://ceszg9618k.execute-api.us-east-2.amazonaws.com/items/${id}`);
             xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function () {
+                if (xhr.status === 200) { // make sure request was successful
+                    document.getElementById("load-data").click(); // automatically updates the table by calling the load-data function
+                } else {
+                    alert(`Failed to delete ${name}`);
+                }
+            }
             xhr.send();
         }
     </script>
+
 </body>
 
 </html>
